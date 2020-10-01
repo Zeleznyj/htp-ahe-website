@@ -9,7 +9,7 @@ import numpy as np
 import json_tricks
 import dash_bootstrap_components as dbc
 
-from app import app
+from app import app,server
 from materials import Eu2SeO2,GdTmRh2
 from utils import Header
 #from plotly.express.colors.qualitative import vivid
