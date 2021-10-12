@@ -20,9 +20,13 @@ def get_menu():
             id='materials-selection',
             options=[
                 {'label':'Eu2SeO2','value': 'Eu2SeO2'},
-                {'label':'GdTmRh2','value': 'GdTmRh2'}
+                {'label':'GdTmRh2','value': 'GdTmRh2'},
+                {'label':'U2PN2','value': 'U2PN2'},
+                {'label':'Ni','value': 'Ni'},
+                {'label':'MnCoPt2','value': 'MnCoPt2'},
+                {'label':'CeTe2','value': 'CeTe2'},
                 ],
-            value='Eu2SeO2'
+            value='CeTe2'
         )
         ])
 

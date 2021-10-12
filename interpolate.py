@@ -16,13 +16,21 @@ def interpolate_to_new_grid(Xkd,nk):
                 kpts.append(np.array([float(i),float(j),float(k)])/nk)
     return np.array(kpts),intp(kpts)
 
-def create_3d_plot(fname):
+def create_3d_plot(fname,isomin=1e3,isomax=1e4,surface_count=17):
 
     #Xkd = np.load('Eu2SeO2.npy')
     #kpts,Xkdi = interpolate_to_new_grid(Xkd,30)
 
-    with open(fname,'r') as f:
-        kpts,Xkdi = json_tricks.load(f)
+    try:
+        with open(fname,'r') as f:
+            inp = json_tricks.load(f)
+            kpts = inp['kpts']
+            Xkdi = inp['Xkdi']
+            ran = inp['ran']
+    except:
+        with open(fname,'r') as f:
+            kpts,Xkdi = json_tricks.load(f)
+        ran = None
 
     #fig = go.Figure(layout={'height': 800, 'width': 800, 'title': 'Berry curvature distribution'})
     #layout = {'height': 800, 'width': 1000, 'title': 'Berry curvature distribution'}
@@ -33,20 +41,34 @@ def create_3d_plot(fname):
         y=kpts[:,1],
         z=kpts[:,2],
         value=np.abs(Xkdi),
-        isomin=1e3,
-        isomax=1e4,
+        isomin=isomin,
+        isomax=isomax,
         opacity=0.1, # needs to be small to see through all surfaces
-        surface_count=17, # needs to be a large number for good volume rendering
+        surface_count=surface_count, # needs to be a large number for good volume rendering
         name='Berry curvature',
         visible=True
         )
 
     fig.update_traces(showlegend=True)
     fig.update_layout(legend=dict(yanchor="top", y=1, x=0))
+    if ran is None:
+        fig.update_layout(scene=dict(
+            xaxis=dict(range=[0,1]),
+            yaxis=dict(range=[0,1]),
+            zaxis=dict(range=[0,1]),
+            ))
+        fig.update_layout(scene_aspectmode='cube')
+    else:
+        fig.update_layout(scene=dict(
+            xaxis=dict(range=ran[0]),
+            yaxis=dict(range=ran[1]),
+            zaxis=dict(range=ran[2]),
+            ))
 
     return fig
 
-def plotly_plane(fname,vmax=None,vmax_sf=3,bands=None,legend=True):
+def plotly_plane(fname,vmax=None,vmax_sf=3,bands=None,legend=True,width=3,
+        legendonlybands=None):
 
     with open(fname) as f:
         Xkd_p,crossing_ks_p = json_tricks.load(f)
@@ -55,20 +77,38 @@ def plotly_plane(fname,vmax=None,vmax_sf=3,bands=None,legend=True):
         vmax = np.max(np.abs(Xkd_p))/vmax_sf
 
     fig = px.imshow(np.abs(Xkd_p.T),origin='lower',color_continuous_scale='blues',zmax=vmax,
-                x=np.linspace(0,1,100,endpoint=False),y=np.linspace(0,1,100,endpoint=False))
+                x=np.linspace(0,1,Xkd_p.shape[1],endpoint=False),y=np.linspace(0,1,Xkd_p.shape[0],endpoint=False))
+
+    colors = px.colors.qualitative.G10
 
     if bands is None:
         bands = range(len(crossing_ks_p))
-    colors = px.colors.qualitative.G10
+
+    if legendonlybands is None:
+        legendonlybands = []
+
+    bands_vis = []
     for b in bands:
-        fig.add_scattergl(x=crossing_ks_p[b][:,0],y=crossing_ks_p[b][:,1],mode='markers',name='nodal line {}'.format(b),
-                marker={'color':colors[b+1]})
-    fig.update_xaxes(range=[0,1],autorange=False)
+        if b in legendonlybands:
+            bands_vis.append('legendonly')
+        else:
+            bands_vis.append(True)
+
+    for i,b in enumerate(bands):
+        fig.add_scattergl(x=crossing_ks_p[b][:,0],y=crossing_ks_p[b][:,1],mode='markers'
+                ,name='nodal line {}'.format(b),visible=bands_vis[i],
+                marker={'color':colors[b+1],'size':width})
+    fig.update_xaxes(range=[0,1],autorange=False,constrain="domain")
     fig.update_yaxes(range=[0,1],autorange=False)
     if legend:
-        fig.update_layout(coloraxis_colorbar=dict(yanchor="top", y=1, x=0))
-
-    
+        fig.update_layout(coloraxis_colorbar=dict(yanchor="top", y=1, x=-0.05))
+    fig.update_layout(height=600,autosize=True)
+    fig.update_xaxes(automargin=True)
+    #if aspect_ratio is not None:
+    #    fig.update_layout(yaxis=dict(scaleanchor="x", scaleratio=aspect_ratio))
+    fig.update_layout(margin=dict(
+        l=0,
+    )),
 
     return fig
 
@@ -114,22 +154,44 @@ def plot_bands(fname,title=None,ylim=None):
 
     nbands0 = bands_data['Eks0'].shape[1]
     for b in range(nbands0):
-        fig.add_scatter(x=bands_data['xdata'],y=bands_data['Eks0'][:,b],
-                line={'dash':'dot','color':'black'},row=1, col=1)
+        if b == 0:
+            name = 'non-rel spin-up'
+            showlegend = True
+        else:
+            name = 'band{}'.format(b)
+            showlegend = False
+        fig.add_scatter(x=bands_data['xdata'],y=bands_data['Eks0'][:,b],name=name,
+                        line={'dash':'dot','color':'black'},row=1, col=1,
+                       showlegend=showlegend)
         
     nbands1 = bands_data['Eks1'].shape[1]
     for b in range(nbands0):
-        fig.add_scatter(x=bands_data['xdata'],y=bands_data['Eks1'][:,b],
-                line={'dash':'dash','color':'black'},row=1, col=1)
+        if b == 0:
+            name = 'non-rel spin-down'
+            showlegend = True
+        else:
+            name = 'band{}'.format(b)
+            showlegend = False
+        fig.add_scatter(x=bands_data['xdata'],y=bands_data['Eks1'][:,b],name=name,
+                        line={'dash':'dash','color':'black'},row=1, col=1,
+                       showlegend=showlegend)
         
     nbands = bands_data['Eksr'].shape[1]
     for b in range(nbands):
-        fig.add_scatter(x=bands_data['xdata'],y=bands_data['Eksr'][:,b],
-                line={'color':'black'},row=1, col=1)
-        
+        if b == 0:
+            name = 'rel'
+            showlegend = True
+        else:
+            name = 'band{}'.format(b)
+            showlegend = False
+        fig.add_scatter(x=bands_data['xdata'],y=bands_data['Eksr'][:,b],name=name,
+                        line={'color':'black'},row=1, col=1,showlegend=showlegend)        
+
     if ylim is None:
         ylim = bands_data['ylim']
     fig.update_yaxes(range=ylim,autorange=False,title='Ev [meV]',row=1,col=1)
+    xran = [np.amin(bands_data['xdata']),np.amax(bands_data['xdata'])]
+    fig.update_xaxes(range=xran)
 
     fig.add_shape(
             dict(
@@ -144,12 +206,13 @@ def plot_bands(fname,title=None,ylim=None):
             )
     ))
         
-    fig.add_scatter(x=bands_data['xdata'],y=bands_data['bc'][:,2],line={'color':px.colors.qualitative.Vivid[1]},row=2, col=1)
+    fig.add_scatter(x=bands_data['xdata'],y=bands_data['bc'][:,2],line={'color':px.colors.qualitative.Vivid[1]},row=2, col=1,
+            name='Berry curvature')
 
     fig.update_yaxes(title='Berry curvature [?]',row=2,col=1)
         
 
-    fig.update_layout(showlegend=False,title=title,height=600,autosize=True)
+    fig.update_layout(title=title,height=600,autosize=True)
 
     return fig
 

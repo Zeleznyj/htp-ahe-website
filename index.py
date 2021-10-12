@@ -10,7 +10,7 @@ import json_tricks
 import dash_bootstrap_components as dbc
 
 from app import app,server
-from materials import Eu2SeO2,GdTmRh2
+from materials import Eu2SeO2,GdTmRh2,U2PN2,Ni,MnCoPt2,CeTe2
 from utils import Header
 #from plotly.express.colors.qualitative import vivid
 
@@ -35,11 +35,17 @@ app.layout = dbc.Container([Header(app), html.Div(id="material-content")])
         [dash.dependencies.Input('materials-selection','value')])
 def update(value):
     if value == 'Eu2SeO2':
-        print('Eu2SeO2')
         return Eu2SeO2.layout
     elif value == 'GdTmRh2':
-        print('GdTmRh2')
         return GdTmRh2.layout
+    elif value == 'U2PN2':
+        return U2PN2.layout
+    elif value == 'Ni':
+        return Ni.layout
+    elif value == 'MnCoPt2':
+        return MnCoPt2.layout
+    elif value == 'CeTe2':
+        return CeTe2.layout
     else:
         print('nevim')
 
