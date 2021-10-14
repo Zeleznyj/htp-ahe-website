@@ -1,6 +1,6 @@
 import dash
-import dash_core_components as dcc
-import dash_html_components as html
+from dash import dcc
+from dash import html
 from dash.dependencies import Input, Output
 import plotly.express as px
 import plotly.graph_objects as go
@@ -10,9 +10,11 @@ import json_tricks
 import dash_bootstrap_components as dbc
 
 from app import app,server
-from materials import Eu2SeO2,GdTmRh2,U2PN2,Ni,MnCoPt2,CeTe2
-from utils import Header
-#from plotly.express.colors.qualitative import vivid
+from common import Navbar
+import material_explorer.me_app as me_app
+import nodal_lines.index_nl as index_nl
+import statistics.stat_app as stat_app
+import homepage
 
 from interpolate import interpolate_to_new_grid,plotly_plane,add_plane
 
@@ -29,27 +31,29 @@ from interpolate import interpolate_to_new_grid,plotly_plane,add_plane
 #app.layout = html.Div(
 #    [Header(app), html.Div(id="material-content")]
 #)
-app.layout = dbc.Container([Header(app), html.Div(id="material-content")])
+import dash_defer_js_import as dji
+mathjax_script = dji.Import(src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_SVG")
 
-@app.callback(dash.dependencies.Output("material-content","children"),
-        [dash.dependencies.Input('materials-selection','value')])
-def update(value):
-    if value == 'Eu2SeO2':
-        return Eu2SeO2.layout
-    elif value == 'GdTmRh2':
-        return GdTmRh2.layout
-    elif value == 'U2PN2':
-        return U2PN2.layout
-    elif value == 'Ni':
-        return Ni.layout
-    elif value == 'MnCoPt2':
-        return MnCoPt2.layout
-    elif value == 'CeTe2':
-        return CeTe2.layout
+navbar = Navbar()
+app.layout = dbc.Container([navbar, html.Div(id="material-content")])
+app.layout = html.Div([
+    dcc.Location(id = 'url', refresh = False),
+    html.Div(id = 'page-content'),
+    mathjax_script
+])
+
+
+@app.callback(Output('page-content', 'children'),
+            [Input('url', 'pathname')])
+def display_page(pathname):
+    if pathname == '/material_explorer':
+        return me_app.create_layout()
+    elif pathname == '/nodal_lines':
+        return index_nl.create_layout()
+    elif pathname == '/statistics':
+        return stat_app.create_layout()
     else:
-        print('nevim')
-
-#Eu2SeO2.create_layout(app)
+        return homepage.create_layout()
 
 
 
