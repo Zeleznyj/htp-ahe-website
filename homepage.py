@@ -6,5 +6,5 @@ import dash_bootstrap_components as dbc
 from common import Navbar
 
 def create_layout():
-    layout = html.Div([Navbar(),html.H3('Home')])
+    layout = dbc.Container(html.Div([Navbar(),html.H3('Home')]))
     return layout
