@@ -16,31 +16,32 @@ from app import app
 from common import Navbar, column_names, inv_column_names
 
 df = pd.read_json('data/paper_database.json')
-dfs = df[['formula','id','norm_g','Hall_angle','spacegroup','magnetic_symmetry','cond_xx',
+dfs = df[['formula','id','norm_h','Hall_angle','spacegroup','cond_xx',
           'gamma_convergence','k_convergence','total_magnetization']]
+dfs.sort_values(by='norm_h',ascending=False,inplace=True)
 gammas = [0.0001, 0.0005, 0.001, 0.005, 0.01]
 
 def create_cond_figure(X,offdiag=False):
 
     fig = go.Figure()
-    fig.add_trace(go.Scatter(x=gammas, y=X[0,:,0,0,0],
+    fig.add_trace(go.Scatter(x=gammas, y=X[0,:,0,0],
                         mode='lines',
                         name='xx'
                         ))
-    fig.add_trace(go.Scatter(x=gammas, y=X[0,:,0,1,1],
+    fig.add_trace(go.Scatter(x=gammas, y=X[0,:,1,1],
                         mode='lines',
                         name='yy'))
-    fig.add_trace(go.Scatter(x=gammas, y=X[0,:,0,2,2],
+    fig.add_trace(go.Scatter(x=gammas, y=X[0,:,2,2],
                         mode='lines',
                         name='zz'))
     if offdiag:
-        fig.add_trace(go.Scatter(x=gammas, y=X[0,:,0,0,1],
+        fig.add_trace(go.Scatter(x=gammas, y=X[0,:,0,1],
                             mode='lines',
                             name='xy'))
-        fig.add_trace(go.Scatter(x=gammas, y=X[0,:,0,0,2],
+        fig.add_trace(go.Scatter(x=gammas, y=X[0,:,0,2],
                             mode='lines',
                             name='xz'))
-        fig.add_trace(go.Scatter(x=gammas, y=X[0,:,0,1,2],
+        fig.add_trace(go.Scatter(x=gammas, y=X[0,:,1,2],
                             mode='lines',
                             name='xz'))
     fig.update_xaxes(type="log")
@@ -61,13 +62,13 @@ def create_cond_offdiag_figure(X):
 
     fig = go.Figure()
 
-    fig.add_trace(go.Scatter(x=gammas, y=X[0,:,0,0,1],
+    fig.add_trace(go.Scatter(x=gammas, y=X[0,:,0,1],
                              mode='lines',
                              name='xy'))
-    fig.add_trace(go.Scatter(x=gammas, y=X[0,:,0,0,2],
+    fig.add_trace(go.Scatter(x=gammas, y=X[0,:,0,2],
                              mode='lines',
                              name='xz'))
-    fig.add_trace(go.Scatter(x=gammas, y=X[0,:,0,1,2],
+    fig.add_trace(go.Scatter(x=gammas, y=X[0,:,1,2],
                              mode='lines',
                              name='xz'))
 
@@ -85,13 +86,13 @@ def create_cond_offdiag_figure(X):
 
 def create_AHE_figure(X):
     fig = go.Figure()
-    fig.add_trace(go.Scatter(x=gammas, y=X[1,:,0,0,1],
+    fig.add_trace(go.Scatter(x=gammas, y=X[1,:,0,1],
                         mode='lines',
                         name='xy'))
-    fig.add_trace(go.Scatter(x=gammas, y=X[1,:,0,0,2],
+    fig.add_trace(go.Scatter(x=gammas, y=X[1,:,0,2],
                         mode='lines',
                         name='xz'))
-    fig.add_trace(go.Scatter(x=gammas, y=X[1,:,0,1,2],
+    fig.add_trace(go.Scatter(x=gammas, y=X[1,:,1,2],
                         mode='lines',
                         name='xz'))
     fig.update_xaxes(type="log")
@@ -138,7 +139,7 @@ def plot_bands(idd):
         height=600,)
 
     #fig.update_yaxes(title_text=r'$E - E_F \  \text{[eV]}$')
-    fig.update_yaxes(title_text=r'E - E_F [eV]')
+    fig.update_yaxes(title_text=r'E - E_F [eV]',range=[-5, 5])
 
     return fig
 
@@ -150,7 +151,7 @@ def get_data_type(name):
         return 'text'
 
 def get_data_format(name):
-    if name in ['cond_xx','norm_g','cond_xx','total_magnetization','gamma_convergence','k_convergence']:
+    if name in ['cond_xx','norm_h','cond_xx','total_magnetization','gamma_convergence','k_convergence']:
         return Format(precision=2, scheme=Scheme.fixed)
     elif name in ['Hall_angle']:
         return Format(precision=3, scheme=Scheme.fixed)
@@ -206,13 +207,16 @@ def create_layout():
                     dbc.Alert("Bands not available!", color="warning",),
                     id='band_alert',hidden=True
                 ),
+                html.Div(
                 dbc.Container([
                 dcc.Graph(
                     id='fig_bands',
-                    figure=go.Figure()
+                    figure=go.Figure(),
                     ),
                 html.P('Black lines denote the FPLO bands, red bands are the bands of the Wannier Hamiltonian.')
                 ]),
+                id='fig_bands_container',
+                hidden=False),
 
                 html.H4("AHE Gamma dependence"),
                 dbc.Container(
@@ -268,6 +272,7 @@ def update_table(value):
     Output('materials_project_link','href'),
     Output('material_div','hidden'),
     Output('band_alert','hidden'),
+    Output('fig_bands_container','hidden'),
     Input('table', 'selected_row_ids')
 )
 def test_row(selected_rows_ids):
@@ -279,18 +284,21 @@ def test_row(selected_rows_ids):
                'Material',
                '.',
                True,
-               True
+               True,
+               False
                )
     else:
         idd = selected_rows_ids[0]
         row = df[df['id'] == idd].iloc[0]
-        X = np.array(row['X-250-final'])
+        X = np.array(row['X'])
         band_plot = plot_bands(idd)
         if band_plot is None:
             band_plot = go.Figure()
             band_warning = False
+            band_figure_hidden = True
         else:
             band_warning = True
+            band_figure_hidden = False
         return (create_cond_figure(X),
                 create_cond_offdiag_figure(X),
                create_AHE_figure(X),
@@ -299,4 +307,5 @@ def test_row(selected_rows_ids):
                'https://materialsproject.org/materials/{}/'.format(idd),
                False,
                band_warning,
+               band_figure_hidden,
                )

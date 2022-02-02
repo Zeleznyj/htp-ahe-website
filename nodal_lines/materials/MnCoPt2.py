@@ -19,6 +19,7 @@ from interpolate import interpolate_to_new_grid,plotly_plane,add_plane,create_3d
 colors = px.colors.qualitative.G10
 prefix = 'MnCoPt2'
 data_dir = 'nodal_lines/data/MnCoPt2/'
+kscale = 1.2039703998639562
 
 def create_layout():
 
@@ -29,12 +30,12 @@ def create_layout():
                     surface_count=14)
 
             opacity = 0.3
-            add_plane(fig3d,[1,1,0],[0,0,1],shift=[0,0,0],color=colors[1],opacity=opacity,name='[110] plane',visible='legendonly')
-            add_plane(fig3d,[1,-1,0],[0,0,1],shift=[0,1,0],color=colors[1],opacity=opacity,name='[1-10] plane',visible='legendonly')
-            add_plane(fig3d,[1,0,0],[0,0,1],shift=[0,0,0],color=colors[2],opacity=opacity,name='[010] plane',visible='legendonly')
-            add_plane(fig3d,[1,0,0],[0,0,1],shift=[0,1,0],color=colors[2],opacity=opacity,name='[010] plane',visible='legendonly')
-            add_plane(fig3d,[0,1,0],[0,0,1],shift=[0,0,0],color=colors[2],opacity=opacity,name='[100] plane',visible='legendonly')
-            add_plane(fig3d,[0,1,0],[0,0,1],shift=[1,0,0],color=colors[2],opacity=opacity,name='[100] plane',visible='legendonly')
+            add_plane(fig3d,[1,1,0],[0,0,1],shift=[0,0,0],color=colors[1],opacity=opacity,name='(110) plane',visible='legendonly')
+            add_plane(fig3d,[1,-1,0],[0,0,1],shift=[0,1,0],color=colors[1],opacity=opacity,name='(1-10) plane',visible='legendonly')
+            add_plane(fig3d,[1,0,0],[0,0,1],shift=[0,0,0],color=colors[2],opacity=opacity,name='(010) plane',visible='legendonly')
+            add_plane(fig3d,[1,0,0],[0,0,1],shift=[0,1,0],color=colors[2],opacity=opacity,name='(010) plane',visible='legendonly')
+            add_plane(fig3d,[0,1,0],[0,0,1],shift=[0,0,0],color=colors[2],opacity=opacity,name='(100) plane',visible='legendonly')
+            add_plane(fig3d,[0,1,0],[0,0,1],shift=[1,0,0],color=colors[2],opacity=opacity,name='(100) plane',visible='legendonly')
         else:
             fig3d = go.Figure()
         return fig3d
@@ -50,17 +51,17 @@ def create_layout():
     figp1_0.update_layout(title='Spin-up bands')
     add_line(figp1_0,y0=0.5,name='line 1',dash='dot')
 
-    figb1_1 = plot_bands(data_dir + 'bands1_1.json',title='Bands and Berry curvature along line 1',ylim=(-0.1,0.1))
+    figb1_1 = plot_bands(data_dir + 'bands1_1.json',title='Bands and Berry curvature along line 1',ylim=(-0.1,0.1),kscale=kscale)
     add_circle(figb1_1,0.393,0.08,color=colors[4])
     add_circle(figb1_1,0.606,0.08,color=colors[4])
 
-    figb1_2 = plot_bands(data_dir + 'bands1_2.json',title='Bands and Berry curvature along line 1',ylim=None)
+    figb1_2 = plot_bands(data_dir + 'bands1_2.json',title='Bands and Berry curvature along line 1',ylim=None,kscale=kscale)
     add_circle(figb1_2,0.,-0.049,color=colors[7])
     add_circle(figb1_2,1.,-0.049,color=colors[7])
     add_circle(figb1_2,0.247,-0.015,color=colors[6])
     add_circle(figb1_2,0.756,-0.015,color=colors[6])
 
-    figb1_3 = plot_bands(data_dir + 'bands1_3.json',title='Bands and Berry curvature along line 2',ylim=None)
+    figb1_3 = plot_bands(data_dir + 'bands1_3.json',title='Bands and Berry curvature along line 2',ylim=None,kscale=kscale)
     add_circle(figb1_3,0.36,0.181,color=colors[3])
     add_circle(figb1_3,0.36,0.181,size=18,color=colors[2])
     add_circle(figb1_3,0.64,0.181,color=colors[3])
@@ -75,15 +76,15 @@ def create_layout():
     add_line(figp2_0,y0=0.75,name='line 1',dash='dash')
     add_line(figp2_0,y0=0.5,name='line 2',dash='dot')
 
-    figb2_1 = plot_bands(data_dir + 'bands2_1.json',title='Bands and Berry curvature along line 1',ylim=None)
+    figb2_1 = plot_bands(data_dir + 'bands2_1.json',title='Bands and Berry curvature along line 1',ylim=None,kscale=kscale)
     add_circle(figb2_1,0.452,-0.032,color=colors[2])
     add_circle(figb2_1,0.547,-0.032,color=colors[2])
 
-    figb2_2 = plot_bands(data_dir + 'bands2_2.json',title='Bands and Berry curvature along line 1',ylim=None)
+    figb2_2 = plot_bands(data_dir + 'bands2_2.json',title='Bands and Berry curvature along line 1',ylim=None,kscale=kscale)
     add_circle(figb2_2,0.482,0.078,color=colors[3])
     add_circle(figb2_2,0.518,0.078,color=colors[3])
 
-    figb2_3 = plot_bands(data_dir + 'bands2_3.json',title='Bands and Berry curvature along line 2',ylim=None)
+    figb2_3 = plot_bands(data_dir + 'bands2_3.json',title='Bands and Berry curvature along line 2',ylim=None,kscale=kscale)
     add_circle(figb2_3,0.,-0.049,color=colors[5])
     add_circle(figb2_3,1.,-0.049,color=colors[5])
     add_circle(figb2_3,0.036,-0.01,color=colors[5])
@@ -95,7 +96,7 @@ def create_layout():
         dcc.Link('Link to Materials Project', href='https://materialsproject.org/materials/mp-1221704'),
 
         html.P("""
-        In this material most of the hotspots are located in [110], [-110], [100] and [010] mirror planes,
+        In this material most of the hotspots are located in (110), (-110), (100) and (010) mirror planes,
         although some hotspots also lie outside of the planes. Many of the hotspots can be connected to 
         nodal lines, however, this is not always completely clear since many bands exist in this material
         close to the Fermi level and many nodal lines exist in the mirror planes. In addition spin-orbit coupling
@@ -128,10 +129,10 @@ def create_layout():
         ),
 
         html.P("""
-        Two nonequivalent planes exist in this material: [100] and [010].    """),
+        Two nonequivalent planes exist in this material: (100) and (010).    """),
 
         
-        html.H3('Berry curvature distribution in the [100] plane'),
+        html.H3('Berry curvature distribution in the (100) plane'),
         html.P(""" 
                 Both spin-up and spin-down nodal lines are important in this material
                 and thus we show both separately.
@@ -182,7 +183,7 @@ def create_layout():
                 )
             ),
 
-        html.H3('Berry curvature distribution in the [100] plane'),
+        html.H3('Berry curvature distribution in the (100) plane'),
         html.P(""" 
                 Both spin-up and spin-down nodal lines are important in this material
                 and thus we show both separately.

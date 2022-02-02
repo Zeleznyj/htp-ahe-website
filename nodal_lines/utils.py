@@ -8,7 +8,12 @@ def Header(app):
 
 def get_header(app):
     header = html.Div(
-        [html.H1('HTP-AHE nodal line analysis for top materials')],
+        [html.H1('HTP-AHE nodal line analysis for top materials'),
+            html.P('Here we analyze the relation between Berry curvature and non-relativistic symmetry'
+            'protected nodal lines and other band degeneracies. In all the plots Berry curvature refers'
+            'the sum of Berry curvature of all the occupied bands, which is given in units of S/cm A^-3, '
+            'so that its integral directly gives the intrinsic AHE. Note that in the 3D and 2D plots '
+            'we plot the absolute value of the Berry curvature for simplicity.')],
         className="row",
     )
     return header

@@ -1,5 +1,6 @@
 import numpy as np
 from scipy.interpolate import RegularGridInterpolator
+import plotly
 import plotly.express as px
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
@@ -67,8 +68,8 @@ def create_3d_plot(fname,isomin=1e3,isomax=1e4,surface_count=17):
 
     return fig
 
-def plotly_plane(fname,vmax=None,vmax_sf=3,bands=None,legend=True,width=3,
-        legendonlybands=None):
+def plotly_plane(fname,vmax=None,vmax_sf=1,bands=None,legend=True,width=3,
+        legendonlybands=None,rescale_colors=True):
 
     with open(fname) as f:
         Xkd_p,crossing_ks_p = json_tricks.load(f)
@@ -76,7 +77,18 @@ def plotly_plane(fname,vmax=None,vmax_sf=3,bands=None,legend=True,width=3,
     if vmax is None:
         vmax = np.max(np.abs(Xkd_p))/vmax_sf
 
-    fig = px.imshow(np.abs(Xkd_p.T),origin='lower',color_continuous_scale='blues',zmax=vmax,
+    if rescale_colors:
+        blues = px.colors.get_colorscale('blues')
+        for i in range(len(blues)-1):
+            if i < 4:
+                div = 3
+            else:
+                div = 2
+            blues[i][0] = blues[i][0]/div
+    else:
+        blues = 'blues'
+
+    fig = px.imshow(np.abs(Xkd_p.T),origin='lower',color_continuous_scale=blues,zmax=vmax,
                 x=np.linspace(0,1,Xkd_p.shape[1],endpoint=False),y=np.linspace(0,1,Xkd_p.shape[0],endpoint=False))
 
     colors = px.colors.qualitative.G10
@@ -102,6 +114,7 @@ def plotly_plane(fname,vmax=None,vmax_sf=3,bands=None,legend=True,width=3,
     fig.update_yaxes(range=[0,1],autorange=False)
     if legend:
         fig.update_layout(coloraxis_colorbar=dict(yanchor="top", y=1, x=-0.05))
+        fig.layout.coloraxis.colorbar.title = dict(text='Berry curvature')
     fig.update_layout(height=600,autosize=True)
     fig.update_xaxes(automargin=True)
     #if aspect_ratio is not None:
@@ -144,13 +157,14 @@ def add_plane(fig,a1,a2,shift=None,nps=5,color='#636EFA',opacity=0.5,name='',vis
 
     fig.update_traces(showlegend=True)
 
-def plot_bands(fname,title=None,ylim=None):
+def plot_bands(fname,title=None,ylim=None,kscale=None):
     with open(fname) as f:
         bands_data = json_tricks.load(f)
 
     fig = make_subplots(rows=2, cols=1, 
                     shared_xaxes=True, 
                     vertical_spacing=0.01)
+
 
     nbands0 = bands_data['Eks0'].shape[1]
     for b in range(nbands0):
@@ -206,10 +220,21 @@ def plot_bands(fname,title=None,ylim=None):
             )
     ))
         
-    fig.add_scatter(x=bands_data['xdata'],y=bands_data['bc'][:,2],line={'color':px.colors.qualitative.Vivid[1]},row=2, col=1,
+    if kscale is None:
+        conv = 1
+    else:
+        kscale_A = kscale/0.52918
+        e2hbar = 0.000243413480728
+        conv = 1 / kscale_A / kscale_A * e2hbar * 1e8 / (2*np.pi)**3
+
+    fig.add_scatter(x=bands_data['xdata'],y=conv*bands_data['bc'][:,2],line={'color':px.colors.qualitative.Vivid[1]},row=2, col=1,
             name='Berry curvature')
 
-    fig.update_yaxes(title='Berry curvature [?]',row=2,col=1)
+    if kscale is not None:
+        fig.update_yaxes(title='Berry curvature [S/cm A^3]',row=2,col=1)
+    else:
+        fig.update_yaxes(title='Berry curvature',row=2,col=1)
+
         
 
     fig.update_layout(title=title,height=600,autosize=True)

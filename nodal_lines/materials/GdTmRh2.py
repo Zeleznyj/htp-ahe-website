@@ -19,6 +19,7 @@ from interpolate import interpolate_to_new_grid,plotly_plane,add_plane,create_3d
 colors = px.colors.qualitative.G10
 prefix = 'GdTmRh2'
 data_dir = 'nodal_lines/data/GdTmRh2/'
+kscale = 0.4853397435220382
 
 def create_layout():
 
@@ -29,12 +30,12 @@ def create_layout():
                     surface_count=14)
 
             opacity = 0.3
-            add_plane(fig3d,[0,2,0],[0,0,2],shift=[0,-1,-1],color=colors[1],opacity=opacity,name='[100] plane',visible='legendonly')
-            add_plane(fig3d,[0,2,0],[0,0,2],shift=[1,-1,-1],color=colors[1],opacity=opacity,name='[100] shifted plane',visible='legendonly')
-            add_plane(fig3d,[0,2,0],[0,0,2],shift=[-1,-1,-1],color=colors[1],opacity=opacity,name='[100] shifted2 plane',visible='legendonly')
-            add_plane(fig3d,[2,0,0],[0,0,2],shift=[-1,0,-1],color=colors[1],opacity=opacity,name='[010] plane',visible='legendonly')
-            add_plane(fig3d,[2,0,0],[0,0,2],shift=[-1,1,-1],color=colors[1],opacity=opacity,name='[010] shifted plane',visible='legendonly')
-            add_plane(fig3d,[2,0,0],[0,0,2],shift=[-1,-1,-1],color=colors[1],opacity=opacity,name='[010] shifted2 plane',visible='legendonly')
+            add_plane(fig3d,[0,2,0],[0,0,2],shift=[0,-1,-1],color=colors[1],opacity=opacity,name='(100) plane',visible='legendonly')
+            add_plane(fig3d,[0,2,0],[0,0,2],shift=[1,-1,-1],color=colors[1],opacity=opacity,name='(100) shifted plane',visible='legendonly')
+            add_plane(fig3d,[0,2,0],[0,0,2],shift=[-1,-1,-1],color=colors[1],opacity=opacity,name='(100) shifted2 plane',visible='legendonly')
+            add_plane(fig3d,[2,0,0],[0,0,2],shift=[-1,0,-1],color=colors[1],opacity=opacity,name='(010) plane',visible='legendonly')
+            add_plane(fig3d,[2,0,0],[0,0,2],shift=[-1,1,-1],color=colors[1],opacity=opacity,name='(010) shifted plane',visible='legendonly')
+            add_plane(fig3d,[2,0,0],[0,0,2],shift=[-1,-1,-1],color=colors[1],opacity=opacity,name='(010) shifted2 plane',visible='legendonly')
         else:
             fig3d = go.Figure()
         return fig3d
@@ -45,11 +46,11 @@ def create_layout():
     add_line(figp1,y0=0.12,name='line 1',dash='dash')
     add_line(figp1,y0=0.55,name='line 2',dash='dot')
 
-    figb1_1 = plot_bands(data_dir + 'bands1_1.json',title='Bands and Berry curvature along line 1',ylim=(-0.2,0.2))
+    figb1_1 = plot_bands(data_dir + 'bands1_1.json',title='Bands and Berry curvature along line 1',ylim=(-0.2,0.2),kscale=kscale)
     add_circle(figb1_1,0.11,-0.13,color=colors[2])
     add_circle(figb1_1,0.223,-0.11,color=colors[2])
 
-    figb1_2 = plot_bands(data_dir + 'bands1_2.json',title='Bands and Berry curvature along line 2',ylim=(-0.1,0.05))
+    figb1_2 = plot_bands(data_dir + 'bands1_2.json',title='Bands and Berry curvature along line 2',ylim=(-0.1,0.05),kscale=kscale)
     add_circle(figb1_2,0.447,-0.059,color=colors[4])
     add_circle(figb1_2,0.448,-0.068,color=colors[5])
 
@@ -57,7 +58,7 @@ def create_layout():
         html.H1(children='GdTmRh2'),
         dcc.Link('Link to Materials Project', href='https://materialsproject.org/materials/mp-1184489'),
 
-        html.P("""In this material the hotspots are strongly centered in [100] and [010] mirror planes. 
+        html.P("""In this material the hotspots are strongly centered in (100) and (010) mirror planes. 
         Many nodal lines exist within these planes. The hotspots are likely connected to the nodal lines,
         although clear attribution of the individual nodal lines to the hotspots is made complicated by
         the large number of bands in this material and strong spin-orbit coupling.
@@ -88,13 +89,13 @@ def create_layout():
         ),
 
         html.P("""
-        All of the [100] and [010] mirros in this material are equivalent and thus in the following we explore only
+        All of the (100) and (010) mirros in this material are equivalent and thus in the following we explore only
         one of them in detail. Note that in the above plot, the shifted planes do not appear to be equivalent to the
         ones that go through the [0,0,0] point. This is because the k-mesh is not fine enough. Switching to high-precision
         plot makes the equivalency much more apparent.
         """),
 
-        html.H3('Berry curvature distribution in the [100] plane'),
+        html.H3('Berry curvature distribution in the (100) plane'),
         html.P(""""""),
         dbc.Container(
             dcc.Graph(

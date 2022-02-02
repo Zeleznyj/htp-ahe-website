@@ -20,6 +20,7 @@ from interpolate import interpolate_to_new_grid,plotly_plane,add_plane,create_3d
 colors = px.colors.qualitative.G10
 prefix = 'Ni'
 data_dir = 'nodal_lines/data/Ni/'
+k_scale = 0.9484057193606816
 
 def create_layout():
 
@@ -30,15 +31,15 @@ def create_layout():
                     surface_count=7)
 
             opacity = 0.3
-            add_plane(fig3d,[1,0,0],[0,1,0],color=colors[1],opacity=opacity,name='[110] plane',visible='legendonly')
-            add_plane(fig3d,[1,0,0],[0,0,1],color=colors[1],opacity=opacity,name='[101] plane',visible='legendonly')
-            add_plane(fig3d,[0,1,0],[0,0,1],color=colors[1],opacity=opacity,name='[011] plane',visible='legendonly')
-            add_plane(fig3d,[0,1,0],[1,0,1],color=colors[1],opacity=opacity,name='[-101] plane',visible='legendonly')
-            add_plane(fig3d,[1,0,0],[0,1,1],color=colors[1],opacity=opacity,name='[01-1] plane',visible='legendonly')
-            add_plane(fig3d,[0,0,1],[1,1,0],color=colors[1],opacity=opacity,name='[1-10] plane',visible='legendonly')
-            add_plane(fig3d,[1,0,1],[1,1,0],color=colors[2],opacity=opacity,name='[100] plane',visible='legendonly')
-            add_plane(fig3d,[0,1,1],[1,1,0],color=colors[2],opacity=opacity,name='[010] plane',visible='legendonly')
-            add_plane(fig3d,[0,1,1],[1,0,1],color=colors[2],opacity=opacity,name='[001] plane',visible='legendonly')
+            add_plane(fig3d,[1,0,0],[0,1,0],color=colors[1],opacity=opacity,name='(110) plane',visible='legendonly')
+            add_plane(fig3d,[1,0,0],[0,0,1],color=colors[1],opacity=opacity,name='(101) plane',visible='legendonly')
+            add_plane(fig3d,[0,1,0],[0,0,1],color=colors[1],opacity=opacity,name='(011) plane',visible='legendonly')
+            add_plane(fig3d,[0,1,0],[1,0,1],color=colors[1],opacity=opacity,name='(-101) plane',visible='legendonly')
+            add_plane(fig3d,[1,0,0],[0,1,1],color=colors[1],opacity=opacity,name='(01-1) plane',visible='legendonly')
+            add_plane(fig3d,[0,0,1],[1,1,0],color=colors[1],opacity=opacity,name='(1-10) plane',visible='legendonly')
+            add_plane(fig3d,[1,0,1],[1,1,0],color=colors[2],opacity=opacity,name='(100) plane',visible='legendonly')
+            add_plane(fig3d,[0,1,1],[1,1,0],color=colors[2],opacity=opacity,name='(010) plane',visible='legendonly')
+            add_plane(fig3d,[0,1,1],[1,0,1],color=colors[2],opacity=opacity,name='(001) plane',visible='legendonly')
         else:
             fig3d = go.Figure()
         return fig3d
@@ -52,7 +53,7 @@ def create_layout():
     add_line(figp1,y0=0.8,name='line 2',dash='dot')
     add_line(figp1,y0=0.5,name='line 3',dash='dashdot')
 
-    figb1_1 = plot_bands(data_dir + 'bands1_1.json',title='Bands and Berry curvature along line 1',ylim=(-0.15,0.1))
+    figb1_1 = plot_bands(data_dir + 'bands1_1.json',title='Bands and Berry curvature along line 1',ylim=(-0.15,0.1),kscale=k_scale)
     add_circle(figb1_1,0,-0.070,color=colors[3])
     add_circle(figb1_1,0,-0.070,size=18,color=colors[2])
     add_circle(figb1_1,0.635,-0.12,color=colors[3])
@@ -60,17 +61,17 @@ def create_layout():
     add_circle(figb1_1,1,-0.076,color=colors[3])
     add_circle(figb1_1,1,-0.076,size=18,color=colors[2])
 
-    figb1_2 = plot_bands(data_dir + 'bands1_2.json',title='Bands and Berry curvature along line 2',ylim=(-0.1,0.1))
+    figb1_2 = plot_bands(data_dir + 'bands1_2.json',title='Bands and Berry curvature along line 2',ylim=(-0.1,0.1),kscale=kscale)
     add_circle(figb1_2,0.15,-0.04,color=colors[3])
 
-    figb1_3 = plot_bands(data_dir + 'bands1_3.json',title='Bands and Berry curvature along line 3',ylim=(-0.1,0.1))
+    figb1_3 = plot_bands(data_dir + 'bands1_3.json',title='Bands and Berry curvature along line 3',ylim=(-0.1,0.1),kscale=kscale)
     add_circle(figb1_3,0.07,-0.022,color=colors[1])
     add_circle(figb1_3,0.929,-0.022,color=colors[1])
 
     figp7 = plotly_plane(data_dir + 'plane7.json',bands=None)
     add_line(figp7,y0=0.2,name='line 1',dash='dash')
 
-    figb7_1 = plot_bands(data_dir + 'bands7_1.json',title='Bands and Berry curvature along line 1',ylim=(-0.1,0.1))
+    figb7_1 = plot_bands(data_dir + 'bands7_1.json',title='Bands and Berry curvature along line 1',ylim=(-0.1,0.1),kscale=kscale)
     add_circle(figb7_1,0.452,-0.001,color=colors[1])
     add_circle(figb7_1,0.547,-0.001,color=colors[1])
 
@@ -86,7 +87,7 @@ def create_layout():
                     The plot is given in coordinates of the reciprocal lattice vectors of the primitive lattice.
                     Note that Ni has a FCC lattice and thus the reciprocal lattice vectors are not orthogonal!
                     The naming of the mirrors is, however, based on the conventional lattice vectors. That is, for example,
-                    the [100] mirror corresponds to the mirror plane which is orthogonal to the [100] direction in the
+                    the (100) mirror corresponds to the mirror plane which is orthogonal to the [100] direction in the
                     conventional lattice."""),
 
         html.Div(style={'padding': 10}),
@@ -107,9 +108,9 @@ def create_layout():
         ),
         html.P("""This material contains 9 mirrors. These can be split into two groups, which each contain mirror planes
         that are equivalent (and thus have same Berry curvature distributions). The first group contains mirror planes:
-        [110], [101], [011], [-101], [01-1], [1-10]. The second group contains mirror planes [100], [010] and [001]. """),
+        (110), (101), (011), (-101), (01-1), (1-10). The second group contains mirror planes (100), (010) and (001). """),
 
-        html.H3('Berry curvature distribution in the [-101] plane'),
+        html.H3('Berry curvature distribution in the (-101) plane'),
         html.P("""This plane contains all the major hotspots, which can all be clearly attributed to nodal lines."""),
         dbc.Container(
             dcc.Graph(
@@ -142,7 +143,7 @@ def create_layout():
                 )
             ),
 
-        html.H3('Berry curvature distribution in the [001] plane'),
+        html.H3('Berry curvature distribution in the (001) plane'),
         html.P("""This plane does not contain many hotspots. The hotspots close to the edges of the plane are actually due to nodal line in
                 different planes, as this is where this plane interests other mirror planes. Only the circular hotspots in the middle can be
                 attributed to a nodal line in this plane."""),

@@ -23,6 +23,7 @@ from interpolate import interpolate_to_new_grid,plotly_plane,add_plane,create_3d
 colors = px.colors.qualitative.G10
 prefix = 'Eu2SeO2'
 data_dir = 'nodal_lines/data/Eu2SeO2/'
+kscale = 0.8420243415358468
 
 a = 0.5487316940540308
 c = 0.3121912684686448
@@ -36,17 +37,17 @@ def create_layout():
 
             opacity = 0.3
             add_plane(fig3d,[a*2,a*2,0],[0,0,c*2],shift=[-a,-a,-c],color=colors[1],opacity=opacity,
-                    name='[1-10] plane',visible='legendonly')
+                    name='(1-10) plane',visible='legendonly')
             add_plane(fig3d,[a*2,-a*2,0],[0,0,c*2],shift=[-a,a,-c],color=colors[1],opacity=opacity,
-                    name='[110] plane',visible='legendonly')
+                    name='(110) plane',visible='legendonly')
             add_plane(fig3d,[2*a,0,0],[0,2*a,0],shift=[-a,-a,0],color=colors[2],opacity=opacity,
-                    name='[001] plane',visible='legendonly')
+                    name='(001) plane',visible='legendonly')
             add_plane(fig3d,[2*a,0,0],[0,2*a,0],shift=[-a,-a,-c],color=colors[2],opacity=opacity,
-                    name='[001] plane shifted',visible='legendonly')
+                    name='(001) plane shifted',visible='legendonly')
             add_plane(fig3d,[0,a*2,0],[0,0,c*2],shift=[0,-a,-c],color=colors[3],opacity=opacity,
-                    name='[100] plane',visible='legendonly')
+                    name='(100) plane',visible='legendonly')
             add_plane(fig3d,[2*a,0,0],[0,0,c*2],shift=[-a,0,-c],color=colors[3],opacity=opacity,
-                    name='[010] plane',visible='legendonly')
+                    name='(010) plane',visible='legendonly')
         else:
             fig3d = go.Figure()
         return fig3d
@@ -57,11 +58,11 @@ def create_layout():
     add_line(figp2,y0=0.5,name='line 1',dash='dash')
     add_line(figp2,y0=0.15,name='line 2',dash='dot')
 
-    figb2_1 = plot_bands(data_dir + 'bands_2_1.json',title='Bands and Berry curvature along line 1',ylim=(-0.2,0.2))
+    figb2_1 = plot_bands(data_dir + 'bands_2_1.json',title='Bands and Berry curvature along line 1',ylim=(-0.2,0.2),kscale=kscale)
     add_circle(figb2_1,0.2,-0.06,color=colors[3])
     add_circle(figb2_1,0.323,-0.17,color=colors[2])
 
-    figb2_2 = plot_bands(data_dir + 'bands_2_2.json',title='Bands and Berry curvature along line 2',ylim=(-0.2,0.2))
+    figb2_2 = plot_bands(data_dir + 'bands_2_2.json',title='Bands and Berry curvature along line 2',ylim=(-0.2,0.2),kscale=kscale)
     add_circle(figb2_2,0.175,0.037,color=colors[3])
     add_circle(figb2_2,0.5,-0.0114,color=colors[2])
 
@@ -69,11 +70,11 @@ def create_layout():
     add_line(figp3,y0=0.38,name='line 1',dash='dash')
     add_line(figp3,y0=0.5,name='line 2',dash='dot')
 
-    figb3_1 = plot_bands(data_dir + 'bands_3_1.json',title='Bands and Berry curvature along line 1',ylim=(-0.2,0.2))
+    figb3_1 = plot_bands(data_dir + 'bands_3_1.json',title='Bands and Berry curvature along line 1',ylim=(-0.2,0.2),kscale=kscale)
     add_circle(figb3_1,0.0505,-0.008,color=colors[3])
     add_circle(figb3_1,0.11,-0.024,color=colors[3])
 
-    figb3_2 = plot_bands(data_dir + 'bands_3_2.json',title='Bands and Berry curvature along line 2',ylim=(-0.2,0.2))
+    figb3_2 = plot_bands(data_dir + 'bands_3_2.json',title='Bands and Berry curvature along line 2',ylim=(-0.2,0.2),kscale=kscale)
     add_circle(figb3_2,0.03,-0.023,color=colors[3])
     add_circle(figb3_2,0.185,-0.007,color=colors[3])
 
@@ -81,12 +82,12 @@ def create_layout():
     add_line(figp4,y0=0.6,name='line 1',dash='dash')
     add_line(figp4,y0=0.5,name='line 2',dash='dot')
 
-    figb4_1 = plot_bands(data_dir + 'bands_4_1.json',title='Bands and Berry curvature along line 1',ylim=(-0.2,0.2))
+    figb4_1 = plot_bands(data_dir + 'bands_4_1.json',title='Bands and Berry curvature along line 1',ylim=(-0.2,0.2),kscale=kscale)
     add_circle(figb4_1,0.04,-0.011,color=colors[3])
     add_circle(figb4_1,0.353,-0.0035,color=colors[3])
     add_circle(figb4_1,0.42,0.025,color=colors[3])
 
-    figb4_2 = plot_bands(data_dir + 'bands_4_2.json',title='Bands and Berry curvature along line 2',ylim=(-0.2,0.2))
+    figb4_2 = plot_bands(data_dir + 'bands_4_2.json',title='Bands and Berry curvature along line 2',ylim=(-0.2,0.2),kscale=kscale)
     add_circle(figb4_2,0.056,-0.021,color=colors[3])
     add_circle(figb4_2,0.454,0.034,color=colors[2])
     add_circle(figb4_2,0.46,0.05,color=colors[3])
@@ -96,14 +97,14 @@ def create_layout():
     layout =  html.Div([
         html.H2('Eu2SeO2'),
         dcc.Link('Material at Materials Project', href='https://materialsproject.org/materials/mp-753314/'),
-        html.P("""In this material some hotspots are located in [110] and [1-10] mirror planes and are thus likely
+        html.P("""In this material some hotspots are located in (110) and (1-10) mirror planes and are thus likely
         related to symmetry. Some of these hotspots can be attributed to nodal lines, although not all. This may be
         because spin-orbit coupling in this material is very large and thus the relativistic bands sometimes significantly
         deviate from the nonrelativistic bands.
 
-        Other hotspots likely originate from nodal lines in [001] planes. These are hotposts, which have small dispersion
+        Other hotspots likely originate from nodal lines in (001) planes. These are hotposts, which have small dispersion
         along the z direction and have a tubular shape. We have not identified a nodal line along the direction 
-        of the tube there are nodal lines in the [001] planes that intersect the tube at the top and bottom of the Brillouin zone
+        of the tube there are nodal lines in the (001) planes that intersect the tube at the top and bottom of the Brillouin zone
         as well as in the middle.
 
         """),
@@ -130,7 +131,7 @@ def create_layout():
         ),
 
 
-        html.H3('Berry curvature distribution in the [1-10] plane'),
+        html.H3('Berry curvature distribution in the (1-10) plane'),
         html.P(""""""),
         dbc.Container(
             dcc.Graph(
@@ -155,7 +156,7 @@ def create_layout():
                 )
             ),
 
-        html.H3('Berry curvature distribution in the [001] plane'),
+        html.H3('Berry curvature distribution in the (001) plane'),
         html.P(""""""),
         dbc.Container(
             dcc.Graph(
@@ -180,7 +181,7 @@ def create_layout():
                 )
             ),
 
-        html.H3('Berry curvature distribution in the shifted [001] plane'),
+        html.H3('Berry curvature distribution in the shifted (001) plane'),
         html.P(""""""),
         dbc.Container(
             dcc.Graph(
@@ -205,7 +206,7 @@ def create_layout():
                 )
             ),
 
-        html.H3('Berry curvature distribution in the [100] plane'),
+        html.H3('Berry curvature distribution in the (100) plane'),
         html.P(""""""),
         dbc.Container(
             dcc.Graph(

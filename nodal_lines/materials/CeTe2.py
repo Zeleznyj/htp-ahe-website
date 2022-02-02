@@ -19,30 +19,33 @@ from interpolate import interpolate_to_new_grid,plotly_plane,add_plane,create_3d
 colors = px.colors.qualitative.G10
 prefix = 'CeTe2'
 data_dir = 'nodal_lines/data/CeTe2/'
+kscale = 0.7378097200421293
+
+def plot_3d_cb(i):
+    debug = False
+    if debug == False:
+        fig3d = create_3d_plot(data_dir + 'Xkd_i{}.json'.format(i),isomin=1e3,isomax=3e4,
+                surface_count=14)
+
+        opacity = 0.3
+        add_plane(fig3d,[0,1,0],[0,0,1],shift=[0.5,0,0],color=colors[1],opacity=opacity,name='(100) plane',visible='legendonly')
+        add_plane(fig3d,[1,0,0],[0,0,1],shift=[0,0.5,0],color=colors[1],opacity=opacity,name='(010) plane',visible='legendonly')
+        add_plane(fig3d,[1,1,0],[0,0,1],shift=[0,0,0],color=colors[2],opacity=opacity,name='(-110) plane',visible='legendonly')
+        add_plane(fig3d,[1,-1,0],[0,0,1],shift=[0,1,0],color=colors[2],opacity=opacity,name='(110) plane',visible='legendonly')
+    else:
+        fig3d = go.Figure()
+    return fig3d
 
 def create_layout():
 
-    def plot_3d_cb(i):
-        debug = False
-        if debug == False:
-            fig3d = create_3d_plot(data_dir + 'Xkd_i{}.json'.format(i),isomin=1e3,isomax=3e4,
-                    surface_count=14)
 
-            opacity = 0.3
-            add_plane(fig3d,[0,1,0],[0,0,1],shift=[0.5,0,0],color=colors[1],opacity=opacity,name='[100] plane',visible='legendonly')
-            add_plane(fig3d,[1,0,0],[0,0,1],shift=[0,0.5,0],color=colors[1],opacity=opacity,name='[010] plane',visible='legendonly')
-            add_plane(fig3d,[1,1,0],[0,0,1],shift=[0,0,0],color=colors[2],opacity=opacity,name='[-110] plane',visible='legendonly')
-            add_plane(fig3d,[1,-1,0],[0,0,1],shift=[0,1,0],color=colors[2],opacity=opacity,name='[110] plane',visible='legendonly')
-        else:
-            fig3d = go.Figure()
-        return fig3d
 
     fig3d = plot_3d_cb(30)
 
     figp1 = plotly_plane(data_dir + 'plane1.json',bands=[])
     add_line(figp1,y0=0.5,name='line 1',dash='dash')
 
-    figb1_1 = plot_bands(data_dir + 'bands_1_1.json',title='Bands and Berry curvature along line 1',ylim=(-0.1,0.1))
+    figb1_1 = plot_bands(data_dir + 'bands_1_1.json',title='Bands and Berry curvature along line 1',ylim=(-0.1,0.1),kscale=kscale)
     add_circle(figb1_1,0.2323,0.01280,color=colors[3])
     add_circle(figb1_1,0.7676,0.01280,color=colors[3])
 
@@ -72,14 +75,14 @@ def create_layout():
         this cell differs from the first Brillouin zone only by translation.
         """),
         html.P("""
-        We find that in this material the hotspots are mostly localized in the [100], [010], [110], [-110] mirror planes.
-        Here the [100], [010] mirror planes associated with the hotspots are planes that do not go through the Gamma point,
+        We find that in this material the hotspots are mostly localized in the (100), (010), (110), (-110) mirror planes.
+        Here the (100), (010) mirror planes associated with the hotspots are planes that do not go through the Gamma point,
         but are instead located at the edge of brillouin zone. In this material these mirror planes are peculiar since 
         all the bands are degenerate everywhere within these planes both with and without spin-orbit coupling. Unusually,
         the hotspots appear to be associated with crossing of bands with opposite spin.
         """),
         html.P("""
-        The hotspots in the [110] and [-110] planes are possibly connected to nodal lines, however the interepretation is
+        The hotspots in the (110) and (-110) planes are possibly connected to nodal lines, however the interepretation is
         not very clear here due to large number of bands and a large spin-orbit coupling, which causes significant differences
         between the relativistic and non-relativistic bands."""),
 
@@ -99,7 +102,7 @@ def create_layout():
             )
         ),
 
-        html.H3('Berry curvature distribution in the [010] plane'),
+        html.H3('Berry curvature distribution in the (010) plane'),
         html.P(""""""),
         dbc.Container(
             dcc.Graph(
