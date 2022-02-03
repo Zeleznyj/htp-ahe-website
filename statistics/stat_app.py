@@ -30,7 +30,7 @@ def create_hist_plot(x,y,z,grange=None):
     if grange is None:
         dff = df
     else:
-        dff = df[ (df['norm_g'] > grange[0]) &  (df['norm_g'] < grange[1]) ] 
+        dff = df[ (df['norm_h'] > grange[0]) &  (df['norm_h'] < grange[1]) ] 
 
     if z is None:
         dfz = None
@@ -73,7 +73,7 @@ def create_hist_plot(x,y,z,grange=None):
     return fig
 
 def create_layout():
-    fig_hist = create_hist_plot('total_magnetization','maxZ','norm_g')
+    fig_hist = create_hist_plot('total_magnetization','maxZ','norm_h')
     layout = dbc.Container(html.Div([
         Navbar(),
 
@@ -112,18 +112,18 @@ def create_layout():
               dcc.Dropdown(
                   id='dropdown_hist2d_z',
                   options=axis_options,
-                  value='norm_g',
+                  value='norm_h',
               )], style={"width": "30%"}),
         html.H4('Filter AHE magnitude:',style={"margin-top": "10px"}),
         html.Div([
             dcc.RangeSlider(
                 id='norm_g-range-slider',
                 min=0,
-                max=df['norm_g'].max(),
+                max=df['norm_h'].max(),
                 step=1,
                 # marks = {i:str(int(i)) for i in np.linspace(0,5000,5,endpoint=True)},
                 marks={0: '0', 1000: '1000', 2000: '2000', 3000: '3000', 4000: '4000', 5000: '5000'},
-                value=[0, df['norm_g'].max()]
+                value=[0, df['norm_h'].max()]
             ),
             html.Div(id='output-container-range-slider')
         ], style={"width": "50%"}),
