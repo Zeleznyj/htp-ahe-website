@@ -11,7 +11,7 @@ def create_layout():
         html.H3('High-troughput study of the anomalous Hall effect'),
         html.P(["""
             This page contains results of high-throughput calculations of the intrinsic 
-            anomalous Hall effect in 2871 materials from the Materials Project. See []
+            anomalous Hall effect in 2871 materials from the Materials Project. See paper [1]
             for the full description of the  calculations.
             Here you can find the detailed results of the calculations for all the materials (""",
             html.A('Materials Explorer',href ='material_explorer'),
@@ -24,10 +24,19 @@ def create_layout():
             html.A("Nodal line analysis",href='nodal_lines'),
             ")"
             ]),
+        dbc.Alert([
+            """
+            The Supplementary material for the paper [1], which includes the full calculation database can be found 
+            """,
+            html.A("here",href="https://www.dropbox.com/sh/bp1a4oz5vd5owjy/AAA9tKNumh-1-g2ZtVCiwuhRa?dl=0"),
+            "."
+            ],
+            color="primary"),
         dbc.Alert(
             """
-            Please cite [] when using the data given here!
+            Please cite [1] when using the data given here!
             """,
-            color="primary"),
+            color="warning"),
+        html.P("[1] J. Zelezny et al., arXiv:2205.14907 (2022)"),
         ]))
     return layout
