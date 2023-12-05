@@ -37,6 +37,6 @@ def create_layout():
             Please cite [1] when using the data given here!
             """,
             color="warning"),
-        html.P("[1] J. Zelezny et al., arXiv:2205.14907 (2022)"),
+        html.A("[1] J. Zelezny et al., npj Computational Materials 9, 151 (2023)",href="https://www.nature.com/articles/s41524-023-01113-5"),
         ]))
     return layout
