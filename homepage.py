@@ -24,19 +24,12 @@ def create_layout():
             html.A("Nodal line analysis",href='nodal_lines'),
             ")"
             ]),
-        dbc.Alert([
-            """
-            The Supplementary material for the paper [1], which includes the full calculation database can be found 
-            """,
-            html.A("here",href="https://www.dropbox.com/sh/bp1a4oz5vd5owjy/AAA9tKNumh-1-g2ZtVCiwuhRa?dl=0"),
-            "."
-            ],
-            color="primary"),
         dbc.Alert(
             """
             Please cite [1] when using the data given here!
             """,
             color="warning"),
         html.A("[1] J. Zelezny et al., npj Computational Materials 9, 151 (2023)",href="https://www.nature.com/articles/s41524-023-01113-5"),
+        html.Img(src="assets/FZU-L-EN-RGB.png",alt="Institute of Physics of the Czech Academy of Sciences")
         ]))
     return layout
